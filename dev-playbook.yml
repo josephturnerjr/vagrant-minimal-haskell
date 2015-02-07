@@ -1,0 +1,22 @@
+---
+- hosts: all
+  vars:
+    haskell_source: "https://www.haskell.org/platform/download/2014.2.0.0/haskell-platform-2014.2.0.0-srcdist.tar.gz"
+  tasks:
+    - name: Update apt
+      apt: update_cache=yes
+      sudo: yes
+
+    - name: Install base packages
+      apt: pkg={{ item }} state=latest
+      sudo: yes
+      with_items:
+        - git-core
+        - build-essential
+        - curl
+        - python-psycopg2
+        - libssl-dev
+        - haskell-platform
+
+    - name: update_cabal
+      shell: cabal update && cabal install cabal-install
