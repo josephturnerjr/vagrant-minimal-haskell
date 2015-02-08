@@ -16,7 +16,30 @@
         - curl
         - python-psycopg2
         - libssl-dev
-        - haskell-platform
+        - software-properties-common
 
-    - name: update_cabal
-      shell: cabal update && cabal install cabal-install
+    - name: haskell ppa key
+      sudo: yes
+      apt_key: id=F6F88286
+               url=http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0xFF3AEACEF6F88286
+               state=present
+
+    - name: Install haskell ppa
+      apt_repository: repo='ppa:hvr/ghc' 
+      sudo: yes
+
+    - name: Install haskell core
+      apt: pkg={{ item }} state=latest
+      sudo: yes
+      with_items:
+        - cabal-install-1.20 
+        - ghc-7.8.4
+
+    - name: update PATH
+      shell: echo "export PATH=~/.cabal/bin:/opt/cabal/1.20/bin:/opt/ghc/7.8.4/bin:$PATH" >> ~/.bashrc
+
+    - name: cabal update
+      shell: cabal update
+    
+    - name: alex happy?
+      shell: cabal install alex happy
